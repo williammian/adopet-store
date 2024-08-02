@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "01b1190a-01e0-47ee-b2ea-76aa228ef25b",
+		"name": "Loja req paralelas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Criar pedido req paralelas",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBUEkgQURPUEVUIFNUT1JFIiwic3ViIjoiY29tcHJhZG9yQGVtYWlsLmNvbS5iciIsIm5vbWUiOiJDb21wcmFkb3IiLCJleHAiOjE3MjI2NTcxOTZ9.pDN1GZmc3QzsANLL5VRfG1bcF0qG5MnOIrW0dNZcDag",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"itens\":[\r\n        {\r\n            \"produtoId\":1,\r\n            \"quantidade\":8\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/pedidos",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"pedidos"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBUEkgQURPUEVUIFNUT1JFIiwic3ViIjoiY29tcHJhZG9yQGVtYWlsLmNvbS5iciIsIm5vbWUiOiJDb21wcmFkb3IiLCJleHAiOjE3MjI2NTcxOTZ9.pDN1GZmc3QzsANLL5VRfG1bcF0qG5MnOIrW0dNZcDag",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
