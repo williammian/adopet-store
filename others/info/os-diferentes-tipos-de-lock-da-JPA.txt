@@ -1,0 +1,75 @@
+Os diferentes tipos de Lock (bloqueio) da JPA
+
+Um conceito muito importante é o de transações. Uma transação é uma forma de agrupar uma série de operações que devem
+ser realizadas todas juntas, como se fossem uma única grande ação.
+
+Utilizamos o módulo do Spring chamado Data JPA. Dessa forma, delegamos para esse módulo todo o gerenciamento das
+transações, de uma forma encapsulada.
+
+Agora, imagine que várias pessoas estão utilizando o sistema e com isso realizando várias transações ao mesmo tempo no
+banco de dados. Para garantir que tudo funcione corretamente e que as informações não sejam misturadas ou perdidas,
+existem os chamados "níveis de isolamento de transações".
+
+O que são Níveis de Isolamento?
+
+Os níveis de isolamento são regras que os bancos de dados usam para decidir como as transações devem ser tratadas quando
+estão acontecendo ao mesmo tempo. Eles ajudam a evitar problemas como:
+
+- Sujeira de Leitura (Dirty Read): Quando uma transação lê dados que foram modificados por outra transação que ainda
+não foi concluída.
+
+- Leitura Não Repetível (Non-Repeatable Read): Quando uma transação lê a mesma linha duas vezes e encontra dados
+diferentes porque outra transação alterou os dados entre as duas leituras.
+
+- Leitura Fantasma (Phantom Read): Quando uma transação reexecuta uma consulta, retornando um conjunto de linhas que
+satisfazem uma condição e encontra um conjunto de linhas diferente, porque outras transações inseriram ou excluíram
+linhas que satisfazem a condição.
+
+Existem quatro níveis principais de isolamento, cada um oferecendo um equilíbrio diferente entre performance e proteção
+contra esses problemas. Para garantir esses níveis de isolamento, utilizamos os locks. Existem dois tipos de locks,
+o otimista e o pessimista.
+
+A principal diferença entre os dois está no que acontece por baixo dos panos:
+
+- Lock Pessimista: bloqueia os dados para que ninguém mais possa alterá-los até que a transação atual seja concluída.
+É como segurar um livro em uma biblioteca e dizer "ninguém mais pode ler isso até que eu termine".
+
+- Lock Otimista: permite que outras transações vejam os dados, mas antes de finalizar a transação, o sistema verifica se
+ninguém mais fez alterações nesse meio tempo. É como se você marcasse a página do livro e, antes de terminar de ler,
+verificasse se ninguém virou a página enquanto você não estava olhando.
+
+Vimos como configurar um lock otimista com a JPA, utilizando a anotação @Version. Mas como configurar um lock pessimista?
+
+Precisamos, além do atributo anotado com @Version, de uma outra anotação. Utilizamos no Repository, no método específico
+que queremos bloquear, a anotação @Lock, passando como parâmetro o tipo de lock que queremos utilizar:
+
+interface LivroRepository extends Repository<Livro, Long> {
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Livro> findByAutor(String autor);
+
+}
+
+Neste exemplo, estamos buscando um Livro pelo seu autor e aplicando um lock pessimista com PESSIMISTIC_WRITE.
+Isso significa que, enquanto estivermos alterando o livro, ninguém mais pode alterá-lo.
+
+Repare que a anotação foi aplicada a um novo método que criamos no repository. Porém, caso quiséssemos usar um lock em
+um método que já existe com o repository, poderíamos apenas sobrescrevê-lo, e a JPA trataria o caso para nós.
+
+Além do PESSIMISTIC_WRITE, existem outros tipos de locks (otimistas e pessimistas) que podemos usar com o LockModeType:
+
+- OPTIMISTIC: esse tipo de lock é obtido ao usar o @Version, automaticamente. Ele confere se uma entidade foi ou não
+atualizada através da versão. Se utilizarmos o READ, teremos o mesmo resultado.
+
+- OPTIMISTIC_FORCE_INCREMENT: tem um mecanismo muito parecido com o anterior, mas toda vez que um objeto é acessado
+(não necessariamente alterado), a versão é modificada. Se utilizarmos o WRITE, teremos o mesmo resultado.
+
+- PESSIMISTIC_READ: é um lock pessimista. Com ele, podemos ler dados ao mesmo tempo, mas não é possível escrever dados.
+Como leitura, entenda uma busca, um SELECT executado no banco de dados, como quando utilizamos algum find.
+
+- PESSIMISTIC_WRITE: também é um lock pessimista. Ele impede leituras e escritas concorrentes, garantindo que apenas uma
+transação por vez possa acessar os dados. Aqui, não podemos nem buscar um dado (leitura), nem escrever (adicionar ou
+atualizar) registros. Para os locks PESSIMISTIC WRITE e READ, não precisamos do atributo @Version.
+
+- PESSIMISTIC_FORCE_INCREMENT: último tipo de lock pessimista. Muito parecido com o anterior. Porém aqui, em qualquer
+movimentação, ele incrementa a versão, como no OPTIMISTIC_FORCE_INCREMENT.
