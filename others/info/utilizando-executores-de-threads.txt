@@ -1,0 +1,53 @@
+Utilizando executores de threads
+
+Quando trabalhamos com threads, podemos criá-las manualmente, mas também podemos utilizar classes para gerenciar essa
+criação, otimizando a performance. O Java tem um pacote chamado java.util.concurrent que nos auxilia nesse aspecto.
+
+Dentro desse pacote, temos as interfaces Executor e ExecutorService. Utilizamos o Executor, que é uma interface mais
+simples, e somente executa tarefas. O ExecutorService, que tem mais métodos e é utilizado em situações mais complexas.
+
+Ambos representam pools de threads, que são instanciados a partir de métodos estáticos da classe Executors.
+Mas o que é um pool de threads?
+
+Um pool de threads é um objeto que trabalha no gerenciamento das threads. Por exemplo: suponha que você quer executar
+uma ação que precisa de 5 threads, porém, só tem 3 no sistema operacional. Você pode escolher como distribuir as tarefas
+da melhor forma possível.
+
+O pool irá fazer a mesma coisa, só que por baixo dos panos, a fim de otimizar os recursos. E a escolha dele pode ser
+usar as 3 threads, mas também pode ser usar duas primeiro, depois uma, depois duas de novo… E assim por diante.
+
+E como definimos os pools de threads com o Executors?
+
+Existem três tipos principais de executors em Java, que geram pools com configurações diferentes:
+
+1 - SingleThreadExecutor: Esse executor faz uma tarefa de cada vez. Se você tem tarefas que não precisam ser executadas
+ao mesmo tempo, essa é uma escolha segura.
+
+ExecutorService executor = Executors.newSingleThreadExecutor();
+executor.execute(() -> {
+    System.out.println("Uma tarefa simples executada pelo SingleThreadExecutor!");
+});
+executor.shutdown();
+
+2 - FixedThreadPool: com o FixedThreadPool, decidimos um número fixo de threads que deverão ser executadas no nosso
+programa. Esse executor é útil quando queremos limitar a quantidade de tarefas executando ao mesmo.
+
+int numberOfThreads = 4;
+ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
+executor.execute(() -> System.out.println("Tarefa 1"));
+executor.execute(() -> System.out.println("Tarefa 2"));
+// ... você pode executar mais tarefas aqui
+executor.shutdown();
+
+3 - CachedThreadPool: Esse executor é utilizado quando não queremos trabalhar com um número fixo de threads. Ele mesmo
+verá quantas threads são necessárias para realizar as tarefas. Porém, caso hajam muitas tarefas, devemos ter cuidado.
+
+ExecutorService executor = Executors.newCachedThreadPool();
+executor.execute(() -> System.out.println("Tarefa que pode precisar de muitos threads!"));
+executor.shutdown();
+
+Para que tratássemos de configurações específicas de como ia funcionar nosso pool de threads, utilizamos a classe
+ThreadPoolTaskExecutor, um tipo de Executor que fornece vários métodos para gerenciar o pool.
+
+Conhecer e utilizar o pacote de concorrência do Java é extremamente útil para lidar com threads tanto em aplicações
+básicas de Java, quanto em aplicações com Spring Boot.
