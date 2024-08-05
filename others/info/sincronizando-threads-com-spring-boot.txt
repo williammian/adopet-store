@@ -1,0 +1,49 @@
+Sincronizando threads com Spring Boot
+
+O que é um CompletableFuture?
+
+É um tipo “turbinado” de Future. A classe Future permite que a gente recupere o retorno de uma threads, mas de uma
+forma mais básica. Temos poucas ações disponíveis.
+
+Já o CompletableFuture disponibiliza mais métodos, que permitem que os resultados sejam combinados de diversas formas.
+Também conseguimos tratar exceções de uma maneira mais fácil.
+
+Podemos dizer que o CompletableFuture é uma forma de utilizarmos o modelo async-await, muito difundido em várias
+linguagens. Isso porque deixamos que as coisas sejam executadas paralelamente, e depois conseguimos pegar os resultados
+e encadeá-los em várias operações.
+
+Recomendo a leitura da documentação para conhecer mais sobre a classe:
+https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html
+
+Um dos métodos que utilizamos foi o join(), para evitar erros de sincronização.
+
+Quais são os casos que devemos nos atentar na sincronização de CompletableFutures?
+
+Utilizar o get() da forma como estávamos aplicando não gerava erros de sincronização, uma vez que utilizamos os gets
+das duas threads em uma única chamada de método.
+
+Isso acontece porque, ao chamar o get() de um completablefuture, ele aguarda até que o future esteja finalizado para
+passar para as próximas ações. Porém, em outros casos podemos gerar exceções: esse é o caso de usarmos o método
+getNow(null). Com ele, pegamos o resultado esperado da thread, e, caso esse valor esteja ausente, passamos um valor
+padrão, como null.
+
+Se considerarmos que os relatórios demoram alguns segundos para serem gerados (você pode simular isso com o Thread.sleep()),
+podemos ter problemas se não utilizarmos o join().
+Teste o seguinte código com e sem o join para entender as mudanças:
+
+------------
+
+//classe AgendamentoService, método enviaEmailsAgendado
+
+var estoqueZerado = relatorioService.infoEstoque();
+var faturamentoObtido = relatorioService.faturamentoObtido();
+
+//CompletableFuture.allOf(estoqueZerado, faturamentoObtido).join();
+
+enviador.enviar(estoqueZerado.getNow(null), faturamentoObtido.getNow(null));
+System.out.println("Thread do agendamento: " + Thread.currentThread().getName());
+
+-------------
+
+Dessa forma, podemos entender melhor como funcionam os métodos, tratamentos de erros e boas práticas da
+classe CompletableFuture do Java.
