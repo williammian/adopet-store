@@ -1,0 +1,81 @@
+Criando threads virtuais à mão
+
+Para criar e inicializar threads virtuais na aplicação do banco, podemos utilizar o método estático da classe Thread:
+startVirtualThread(). Aplicando essa mudança à classe principal, temos:
+
+---------------------------------
+
+package br.com.wm;
+
+import java.math.BigDecimal;
+
+public class AppBanco {
+    public static void main(String[] args) {
+        var cliente = new Cliente("João");
+        var conta = new Conta(cliente, new BigDecimal("150"));
+
+        var operacao = new OperacaoSaque(conta, new BigDecimal("150"));
+
+        Thread saqueJoao = Thread.startVirtualThread(operacao);
+        Thread saqueMaria = Thread.startVirtualThread(operacao);
+
+        //saqueJoao.start();
+        //saqueMaria.start();
+
+        System.out.println(Thread.currentThread().getName());
+
+        try {
+            saqueJoao.join();
+            saqueMaria.join();
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        System.out.println("Saldo final: " + conta.getSaldo());
+
+//        //saque João
+//        operacao.executa();
+//        //saque Maria
+//        operacao.executa();
+    }
+}
+
+----------------------------------
+
+package br.com.wm;
+
+import java.math.BigDecimal;
+
+public class OperacaoSaque implements Runnable{
+
+    private Conta conta;
+    private BigDecimal valor;
+
+    public OperacaoSaque(Conta conta, BigDecimal valor) {
+        this.conta = conta;
+        this.valor = valor;
+    }
+
+    public synchronized void executa() {
+        System.out.println("Iniciando operação de saque.");
+        var saldoAtual = conta.getSaldo();
+
+        if (saldoAtual.compareTo(valor) >= 0) {
+            System.out.println("Debitando valor da conta");
+            conta.debitaSaldo(valor);
+            System.out.println("Saldo atual: " +conta.getSaldo());
+        }
+        System.out.println("Finalizando operação de saque.");
+    }
+
+    @Override
+    public void run() {
+        executa();
+        System.out.println(Thread.currentThread().getName());
+    }
+}
+
+------------------------------------
+
+Repare que não utilizamos mais o new, mas uma outra forma de criação, que já cria e starta a thread de uma vez.
+Por isso, não precisamos mais chamar o método start(). Apenas o startVirtualThread() é suficiente.

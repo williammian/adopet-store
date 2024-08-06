@@ -1,0 +1,23 @@
+Para habilitar o spring boot para executar com threads virtuais
+
+application.properties
+
+spring.threads.virtual.enabled=true
+
+------------------------------------
+
+Você foi designado para otimizar o Playcatch, um serviço de streaming de música similar ao Spotify.
+A aplicação atual utiliza threads tradicionais para gerenciar múltiplas solicitações de usuários simultaneamente,
+mas tem enfrentado gargalos de performance durante picos de acesso.
+Você identificou que a implementação de threads virtuais poderia ser a solução para esse problema.
+
+O sistema Playcatch é baseado em Spring Boot, e você precisa justificar a decisão de migrar de threads tradicionais
+para threads virtuais.
+
+"Threads virtuais permitem um melhor aproveitamento dos recursos do sistema operacional,
+otimizando a performance durante o alto volume de requisições."
+
+Threads virtuais, também conhecidas como fibers ou green threads, podem oferecer um ganho significativo de performance,
+pois são mais leves e permitem que um número maior seja criado sem sobrecarregar o sistema operacional.
+
+-------------------------------------

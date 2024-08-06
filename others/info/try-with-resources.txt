@@ -1,0 +1,60 @@
+try-with-resources
+
+Este recurso ajuda a simplificar o código quando você está lidando com objetos que precisam ser fechados após o uso,
+como arquivos, conexões de rede ou executores de threads. A ideia principal é que você possa usar esses recursos de
+forma segura e eficiente, sem se preocupar em liberá-los depois, porque o Java faz isso por você.
+
+Isso nem sempre era fácil e às vezes levava a erros.
+
+O try-with-resources foi introduzido no Java 7 e é uma maneira de declarar recursos que serão automaticamente fechados
+ao final do bloco try. Antes dele, pessoas programadoras tinham que fechar manualmente esses recursos no bloco finally
+para garantir que eles fossem liberados mesmo se ocorresse uma exceção.
+
+Para que um objeto possa ser usado com try-with-resources, ele precisa implementar a interface java.lang.AutoCloseable
+ou a sua subinterface java.io.Closeable. Inclusive, confira! O ExecutorService implementa alguma dessas interfaces?
+
+Quando você usa um recurso dentro do bloco try-with-resources, o Java garante que o método close() desse recurso será
+chamado automaticamente ao final da execução do bloco, independente de uma exceção ter sido lançada ou não.
+Isso ajuda a prevenir os famosos "resource leaks" (vazamentos de recursos), que podem causar problemas sérios,
+como travamento de aplicativos ou perda de dados.
+
+Vamos ver um exemplo simples de como usar o try-with-resources com um arquivo:
+
+----------------------
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+
+public class ExemploTryWithResources {
+    public static void main(String[] args) {
+        // Caminho do arquivo que queremos ler
+        String path = "arquivo.txt";
+
+        // Aqui usamos o try-with-resources
+        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+            // Lemos uma linha do arquivo
+            String linha = br.readLine();
+
+            // Enquanto houver linhas, imprima-as
+            while (linha != null) {
+                System.out.println(linha);
+                linha = br.readLine();
+            }
+        } catch (IOException e) {
+            // Se houver uma exceção, ela será tratada aqui
+            System.out.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
+        // Não precisamos de um bloco finally para fechar o BufferedReader!
+    }
+}
+
+----------------------
+
+Neste exemplo, o BufferedReader é um recurso que precisa ser fechado após seu uso. Ao usar o try-with-resources,
+o BufferedReader é declarado dentro dos parênteses após a palavra try. Quando o bloco try termina, o BufferedReader é
+automaticamente fechado, mesmo que uma exceção seja lançada dentro do bloco try.
+
+Lembre-se de que o gerenciamento eficiente de recursos não é apenas uma boa prática de programação; é essencial para
+criar aplicativos confiáveis e eficientes. Portanto, conhecer o try-with-resources é um passo importante na sua
+jornada com o Java.
